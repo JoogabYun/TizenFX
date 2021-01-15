@@ -70,12 +70,26 @@ namespace Tizen.NUI.Utility
         private static byte WHITE_SPACE = 0x20;
 
         private int totalPageCnt;
+        private int currentPageNum;
 
         private List<PageData> pageList;
         private List<TagData> tagList;
         private StringReader stream;
         private List<char> characterList;
+        private RendererParameters textParameters;
         private string pageString;
+        private bool needToParsing;
+        private int parsingCnt;
+        private int parsingOffset;
+
+        private int length;
+        private int remainLength;
+        private int offset;
+        private int cutOffIndex;
+        private bool previousMarkup;
+        private Size labelSize;
+
+        private int maxLength;
 
         /// <summary>
         /// When text is inputed, the text is paging in the TextLabe size unit.
@@ -87,7 +101,7 @@ namespace Tizen.NUI.Utility
             if (label == null || str == null) return 0;
 
             // perform this operation to match the utf32 character used in native Dali.
-            bool previousMarkup = label.EnableMarkup;
+            previousMarkup = label.EnableMarkup;
             label.EnableMarkup = false;
             label.Text = str;
             pageString = label.Text;
@@ -95,21 +109,18 @@ namespace Tizen.NUI.Utility
             label.MultiLine = true;
             label.Ellipsis = false;
 
-            int length = pageString.Length;
-            int remainLength = length;
-            int offset = 0;
-            int cutOffIndex = 0;
+            length = pageString.Length;
+            remainLength = length;
+            offset = 0;
+            cutOffIndex = 0;
 
             // init
-            totalPageCnt = 0;
             pageList = new List<PageData>();
             tagList = new List<TagData>();
             characterList = new List<char>();
 
-            stream = new StringReader(pageString);
 
-            RendererParameters textParameters = new RendererParameters();
-            textParameters.Text = pageString;
+            textParameters = new RendererParameters();
             textParameters.HorizontalAlignment = label.HorizontalAlignment;
             textParameters.VerticalAlignment = label.VerticalAlignment;
             textParameters.FontFamily = label.FontFamily;
@@ -121,43 +132,34 @@ namespace Tizen.NUI.Utility
             textParameters.FontSize = label.PointSize;
             textParameters.TextWidth = (uint)label.Size.Width;
             textParameters.TextHeight = (uint)label.Size.Height;
+            labelSize = new Size(label.Size.Width, label.Size.Height);
             textParameters.EllipsisEnabled = true;
             textParameters.MarkupEnabled = previousMarkup;
             textParameters.MinLineSize = label.MinLineSize;
             textParameters.Padding = label.Padding;
 
-
-            Tizen.NUI.PropertyArray cutOffIndexArray = TextUtils.GetLastCharacterIndex(textParameters);
-            uint count = cutOffIndexArray.Count();
-            for (uint i = 0; i < count; i++)
+            // If length is too long, the predicted total count is returned.
+            // When it is GetText(), parse again and return text.
+            needToParsing = false;
+            currentPageNum = 0;
+            maxLength = 3000;
+            if( length > maxLength )
             {
-                cutOffIndexArray.GetElementAt(i).Get(out cutOffIndex); // Gets the last index of text shown on the actual screen.
+                needToParsing = true;
+                parsingOffset = 0;
+                float height = label.GetHeightForWidth(labelSize.Width);
+                totalPageCnt = (int) Math.Ceiling(height / (labelSize.Height - label.Padding.Top - label.Padding.Bottom)) + 1;
+            }
+            else
+            {
+                textParameters.Text = pageString;
+                stream = new StringReader(pageString);
+                CalculatePage(false, 0, 0);
+                stream = null;
 
-                // If markup is enabled, It should parse markup
-                if (label.EnableMarkup)
-                {
-                    int preOffset = offset;
-                    offset = MarkupProcess(offset, cutOffIndex - preOffset);
-                    remainLength -= (offset - preOffset);
-                }
-                //If markup is not enabled, parsing is not required.
-                else
-                {
-                    PageData pageData = new PageData();
-                    pageData.StartOffset = offset;
-                    int cnt = (cutOffIndex - offset) < remainLength ? (cutOffIndex - offset) : remainLength;
-                    remainLength -= cnt;
-                    offset += cnt;
-                    pageData.EndOffset = offset;
-                    pageList.Add(pageData);
-                }
-                totalPageCnt++;
-                if (offset <= 0 || remainLength <= 0) break;
             }
 
-            textParameters.Dispose();
-            cutOffIndexArray.Dispose();
-            stream = null;
+            Log.Info("NUI", "totalPageCnt:" + totalPageCnt + "\n");
             return totalPageCnt;
         }
 
@@ -168,14 +170,37 @@ namespace Tizen.NUI.Utility
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string GetText(int pageNum)
         {
-            if (pageNum > totalPageCnt || pageNum < 1)
+            if (pageNum > totalPageCnt || pageNum < 1 || remainLength < 0)
             {
-                Tizen.Log.Error("NUI", $"Out of Range total page count : {totalPageCnt}, input page number : {pageNum}\n");
+                Tizen.Log.Error("NUI", $"Out of Range total page count : {totalPageCnt}, input page number : {pageNum} remainLength {remainLength}\n");
                 return "";
             }
 
-            List<PageData> dataList = pageList.GetRange(pageNum - 1, 1);
-            foreach (PageData data in dataList)
+            int diffPageNum = pageNum - currentPageNum;
+            if(needToParsing && diffPageNum > 0)
+            {
+                int cnt = (maxLength * diffPageNum) < remainLength ? (maxLength * diffPageNum) : remainLength;
+                if(cnt <= 0) return "";
+
+                char[] charArray = new char[cnt];
+                int startOffset = parsingOffset;
+
+
+                pageString.CopyTo(startOffset, charArray, 0, cnt);
+                offset = startOffset;
+                currentPageNum = pageNum;
+                string pageText = new String(charArray);
+                textParameters.Text = pageText;
+                textParameters.TextWidth = (uint)labelSize.Width;
+                textParameters.TextHeight = (uint)labelSize.Height;
+
+                stream = new StringReader(pageText);
+                CalculatePage(true, startOffset, diffPageNum);
+                stream = null;
+            }
+
+            List<PageData> dataList = pageList.GetRange(pageNum-1, 1);
+            foreach(PageData data in dataList)
             {
                 int cnt = data.EndOffset - data.StartOffset;
                 char[] charArray = new char[cnt];
@@ -184,6 +209,50 @@ namespace Tizen.NUI.Utility
                 return pageText;
             }
             return "";
+        }
+
+        private void CalculatePage(bool needToParsing, int startOffset, int diffPageNum)
+        {
+            int pageCnt = 0;
+            Tizen.NUI.PropertyArray cutOffIndexArray = TextUtils.GetLastCharacterIndex( textParameters );
+            uint count = cutOffIndexArray.Count();
+            for(uint i=0; i < count; i++)
+            {
+                cutOffIndexArray.GetElementAt(i).Get(out cutOffIndex); // Gets the last index of text shown on the actual screen.
+                if(needToParsing) cutOffIndex += startOffset;
+
+                // If markup is enabled, It should parse markup
+                if(previousMarkup)
+                {
+                    int preOffset = offset;
+                    offset = MarkupProcess( offset, cutOffIndex - preOffset );
+                    remainLength -= (offset - preOffset);
+                }
+                //If markup is not enabled, parsing is not required.
+                else
+                {
+                    PageData pageData = new PageData();
+                    pageData.StartOffset = offset;
+                    int cnt = (cutOffIndex - offset ) < remainLength ? (cutOffIndex - offset ) : remainLength;
+
+                    remainLength -= cnt;
+                    offset += cnt;
+                    pageData.EndOffset = offset;
+                    pageList.Add(pageData);
+                }
+                if(needToParsing)
+                {
+                    parsingOffset = offset;
+                    pageCnt++;
+                    if(offset <= 0 || pageCnt >= diffPageNum ) break;
+                }
+                else
+                {
+                    totalPageCnt++;
+                    if(offset <= 0 ) break;
+                }
+            }
+            cutOffIndexArray.Dispose();
         }
 
         private void SkipWhiteSpace(ref int offset)
