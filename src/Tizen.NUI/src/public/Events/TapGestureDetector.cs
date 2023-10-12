@@ -251,6 +251,13 @@ namespace Tizen.NUI
             }
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool FeedTouch(IntPtr sender, View.TouchEventArgs e)
+        {
+            return false;
+        }
+
+
         /// <summary>
         /// Event arguments that are passed via the TapGestureEvent signal.
         /// </summary>

@@ -353,5 +353,22 @@ namespace Tizen.NUI
             Interop.GestureOptions.SetTapRecognizerTime(ms);
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        internal bool FeedTouch(object sender, Touch touch)
+        {
+            View view = sender as View;
+
+            Interop.GestureOptions.FeedTouch(View.getCPtr(view), Touch.getCPtr(touch));
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return true;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        internal void ClearAllGestureDetector()
+        {
+            Interop.GestureOptions.ClearAllGestureDetector();
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
     }
 }

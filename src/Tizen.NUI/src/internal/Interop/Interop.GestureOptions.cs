@@ -95,6 +95,13 @@ namespace Tizen.NUI
 
             [global::System.Runtime.InteropServices.DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_GestureOptions_SetTapRecognizerTime")]
             public static extern void SetTapRecognizerTime(uint ms);
+
+            // test code for gesture
+            [global::System.Runtime.InteropServices.DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_GestureFeedTouch")]
+            public static extern void FeedTouch(global::System.Runtime.InteropServices.HandleRef jarg1, global::System.Runtime.InteropServices.HandleRef jarg2);
+
+            [global::System.Runtime.InteropServices.DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_GestureClearAllGestureDetector")]
+            public static extern void ClearAllGestureDetector();
         }
     }
 }

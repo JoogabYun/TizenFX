@@ -33,6 +33,7 @@ namespace Tizen.NUI.Samples
                 FocusableInTouch = true,
             };
             frontView.TouchEvent += OnFrontTouchEvent;
+            frontView.DispatchTouchMotion = false;
             frontView.WheelEvent += (s, e) =>
             {
                 Tizen.Log.Error("NUI", $"frontView WheelEvent!!!!{e.Wheel.Type}\n");
@@ -102,6 +103,12 @@ namespace Tizen.NUI.Samples
             backView.Add(frontView);
             root.Add(backView);
             window.Add(root);
+
+            var imageView = new ImageView()
+            {
+                ResourceUrl = CommonResource.GetDaliResourcePath() + "DaliDemo/Kid1.svg",
+            };
+            window.Add(imageView);
         }
 
         private bool OnFrontTouchEvent(object source, View.TouchEventArgs e)

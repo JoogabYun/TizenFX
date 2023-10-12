@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+using System;
 using Tizen.NUI.BaseComponents;
 using System.ComponentModel;
 
@@ -136,6 +137,13 @@ namespace Tizen.NUI
         protected override void ReleaseSwigCPtr(System.Runtime.InteropServices.HandleRef swigCPtr)
         {
             Interop.GestureDetector.DeleteGestureDetector(swigCPtr);
+        }
+
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public virtual bool FeedTouch(IntPtr sender, View.TouchEventArgs e)
+        {
+            return false;
         }
     }
 }
