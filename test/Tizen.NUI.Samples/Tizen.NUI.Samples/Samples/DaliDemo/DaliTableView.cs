@@ -366,7 +366,7 @@ namespace Tizen.NUI.Samples
                     mPressedAnimation.Finished += OnPressedAnimationFinished;
                 }
             }
-            return consumed;
+            return false;
         }
 
         private void OnPressedAnimationFinished(object sender, EventArgs e)

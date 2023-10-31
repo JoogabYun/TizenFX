@@ -34,6 +34,8 @@ namespace Tizen.NUI.Samples
 
         private void CreateDaliDemo()
         {
+            // NUIApplication.SetGeometryHittestEnabled(true);
+
             demo = new DaliTableView((string name) =>
             {
                 string fileName = global::System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
