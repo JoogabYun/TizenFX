@@ -160,10 +160,6 @@ namespace Tizen.NUI.BaseComponents.VectorGraphics
             get
             {
                 global::System.IntPtr cPtr = Interop.Shape.GetStrokeGradient(BaseHandle.getCPtr(this));
-<<<<<<< HEAD
-
-=======
->>>>>>> 77c3626fba... NEW GESTURE
                 Gradient ret = Registry.GetManagedBaseHandleFromNativePtr(cPtr) as Gradient;
                 if (ret != null)
                 {

@@ -39,30 +39,41 @@ namespace Tizen.NUI
         public void AddDetector(GestureDetector detector)
         {
             gestureList.Add(detector);
-            // if(gestureList.Exists(x => x == detector) == false)
-            // {
-            // }
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void RemoveDetector(GestureDetector detector)
         {
+            detector.DetachAll();
             gestureList.Remove(detector);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool FeedTouch(object sender, Touch touch)
         {
+            if(gestureList.Count == 0)
+            {
+                return false;
+            }
             if(touch.GetState(0) == PointStateType.Down)
             {
-                GestureOptions.Instance.ClearAllGestureDetector();
+                // GestureOptions.Instance.ClearAllGestureDetector();
                 View view = sender as View;
                 foreach (GestureDetector detector in gestureList)
                 {
                     detector.Attach(view);
                 }
             }
+
             GestureOptions.Instance.FeedTouch(sender, touch);
+
+            if (touch.GetState(0) == PointStateType.Finished || touch.GetState(0) == PointStateType.Interrupted)
+            {
+                foreach (GestureDetector detector in gestureList)
+                {
+                    detector.DetachAll();
+                }
+            }
             return true;
         }
 

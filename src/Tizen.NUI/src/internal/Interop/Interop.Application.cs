@@ -103,6 +103,9 @@ namespace Tizen.NUI
 
             [global::System.Runtime.InteropServices.DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_GetScreenSize")]
             public static extern global::System.IntPtr GetScreenSize();
+
+            [global::System.Runtime.InteropServices.DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_SetGeometryHittestEnabled")]
+            public static extern void SetGeometryHittestEnabled(bool enable);
         }
     }
 }

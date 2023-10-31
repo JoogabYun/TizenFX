@@ -513,6 +513,14 @@ namespace Tizen.NUI
             return ret;
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        static public void SetGeometryHittestEnabled(bool enable)
+        {
+            Interop.Application.SetGeometryHittestEnabled(enable);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+
         /// <summary>
         /// Overrides this method if you want to handle behavior.
         /// </summary>
