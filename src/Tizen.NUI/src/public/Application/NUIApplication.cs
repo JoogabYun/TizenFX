@@ -436,7 +436,7 @@ namespace Tizen.NUI
             {
                 return currentState;
             }
-        } 
+        }
 
         /// <summary>
         /// Gets the default window.
@@ -544,6 +544,21 @@ namespace Tizen.NUI
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             return ret;
         }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        static public void SetGeometryHittestEnabled(bool enable)
+        {
+            Interop.Application.SetGeometryHittestEnabled(enable);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        static public bool IsGeometryHittestEnabled()
+        {
+            return Interop.Application.IsGeometryHittestEnabled();
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
 
         /// <summary>
         /// Overrides this method if you want to handle behavior.
