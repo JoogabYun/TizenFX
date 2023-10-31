@@ -121,6 +121,21 @@ namespace Tizen.NUI
             return ret;
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool HandleEvent(View view, Touch touch)
+        {
+            bool ret = Interop.GestureDetector.HandleEvent(SwigCPtr, View.getCPtr(view), Touch.getCPtr(touch));
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return ret;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CancelAllOtherGestureDetectors()
+        {
+            Interop.GestureDetector.CancelAllOtherGestureDetectors(SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
         internal GestureDetector Assign(GestureDetector rhs)
         {
             GestureDetector ret = new GestureDetector(Interop.GestureDetector.Assign(SwigCPtr, GestureDetector.getCPtr(rhs)), false);
