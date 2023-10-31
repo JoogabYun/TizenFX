@@ -121,6 +121,14 @@ namespace Tizen.NUI
             return ret;
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool FeedTouch(View view, Touch touch)
+        {
+            bool ret = Interop.GestureDetector.FeedTouch(SwigCPtr, View.getCPtr(view), Touch.getCPtr(touch));
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return ret;
+        }
+
         internal GestureDetector Assign(GestureDetector rhs)
         {
             GestureDetector ret = new GestureDetector(Interop.GestureDetector.Assign(SwigCPtr, GestureDetector.getCPtr(rhs)), false);
