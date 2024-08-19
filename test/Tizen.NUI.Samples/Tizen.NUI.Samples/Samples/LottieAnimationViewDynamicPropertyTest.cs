@@ -39,9 +39,9 @@ namespace Tizen.NUI.Samples
         bool OnTick(object sender, Timer.TickEventArgs e)
         {
             bool ret = false;
-            //ret = Test1();
+            ret = Test1();
             //ret = Test2();
-            ret = Test3();
+            // ret = Test3();
             return ret;
         }
 
@@ -132,7 +132,7 @@ namespace Tizen.NUI.Samples
         void MakeAll()
         {
             tlog.Debug(tag, $"MakeAll() start");
-            int width = (int)(root.Size.Width / NUM_OF_VIEW);
+            int width = (int)(root.Size.Width / (NUM_OF_VIEW + 2));
             for (int i = 0; i < NUM_OF_VIEW; i++)
             {
                 var lav = new LottieAnimationView();
@@ -177,6 +177,34 @@ namespace Tizen.NUI.Samples
                     pro.Callback = new Tizen.NUI.BaseComponents.LottieAnimationView.DynamicPropertyCallbackType(OnTransformRotation);
                     lav.DoActionExtension(pro);
                 }
+                lav.Play();
+            }
+
+            {
+                var lav = new LottieAnimationView();
+                lav.Size2D = new Size2D(width, width);
+                lav.URL = Tizen.Applications.Application.Current.DirectoryInfo.Resource + "30.json";
+                lav.LoopCount = -1;
+                lav.BackgroundColor = Color.Black;
+                root.Add(lav);
+                lav.Play();
+            }
+            {
+                var lav = new LottieAnimationView();
+                lav.Size2D = new Size2D(width, width);
+                lav.URL = Tizen.Applications.Application.Current.DirectoryInfo.Resource + "100.json";
+                lav.LoopCount = -1;
+                lav.BackgroundColor = Color.Black;
+                root.Add(lav);
+
+                LottieAnimationViewDynamicProperty pro = new LottieAnimationViewDynamicProperty
+                {
+                    // KeyPath = "**",
+                    KeyPath = "Shape Layer 1.Trim Paths 1",
+                    Property = LottieAnimationView.VectorProperty.TrimEnd,
+                    Callback = new Tizen.NUI.BaseComponents.LottieAnimationView.DynamicPropertyCallbackType(OnTrimEnd),
+                };
+                lav.DoActionExtension(pro);
                 lav.Play();
             }
             tlog.Debug(tag, $"MakeAll() end");
@@ -258,6 +286,13 @@ namespace Tizen.NUI.Samples
             tlog.Debug(tag, $"OnTransformRotation() returnType={returnType} frameNumber={frameNumber}");
 
             return new PropertyValue(frameNumber * 20.0f);
+        }
+
+        private PropertyValue OnTrimEnd(int returnType, uint frameNumber)
+        {
+            tlog.Debug(tag, $"OnTrimEnd() returnType={returnType} frameNumber={frameNumber}");
+
+            return new PropertyValue(30.0f);
         }
 
         public void Deactivate()

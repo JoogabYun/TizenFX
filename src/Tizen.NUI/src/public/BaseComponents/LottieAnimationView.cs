@@ -1306,7 +1306,27 @@ namespace Tizen.NUI.BaseComponents
             /// Transform opacity of the Layer and Group object, Type of float
             /// </summary>
             [EditorBrowsable(EditorBrowsableState.Never)]
-            TransformOpacity
+            TransformOpacity,
+
+            /// <summary>
+            /// Trim Start property of Shape object, Type of float
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            TrimStart,
+
+            /// <summary>
+            /// Trim End property of Shape object, Type of float
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            TrimEnd,
+
+            /// <summary>
+            /// Trim Offset property of Shape object, Type of float
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            TrimOffset
+
+
         };
 
         // This will be public opened after ACR done. (Before ACR, need to be hidden as Inhouse API)
@@ -1450,6 +1470,9 @@ namespace Tizen.NUI.BaseComponents
                 case (int)(VectorProperty.StrokeWidth):
                 case (int)(VectorProperty.TransformRotation):
                 case (int)(VectorProperty.TransformOpacity):
+                case (int)(VectorProperty.TrimStart):
+                case (int)(VectorProperty.TrimEnd):
+                case (int)(VectorProperty.TrimOffset):
                     float tmpFloat = -1;
                     if ((ret != null) && ret.Get(out tmpFloat))
                     {
