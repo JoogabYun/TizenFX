@@ -37,7 +37,6 @@ namespace Tizen.NUI.PenWave
         /// <summary>
         /// Deactivates the tool, stopping it from receiving input and performing its functionality.
         public abstract void Deactivate();
-
     }
 }
 
